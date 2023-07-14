@@ -28,5 +28,7 @@ jobs:
       - name: Install dependencies
         run: npm install -g @commitlint/cli @commitlint/config-conventional
       - run: echo "module.exports = {extends${{ ':' }} ['@commitlint/config-conventional']}" > commitlint.config.js
+      - run: echo "${{ github.event.pull_request.head.sha }}"
+
 
 
