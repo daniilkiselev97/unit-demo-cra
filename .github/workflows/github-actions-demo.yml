@@ -28,6 +28,7 @@ jobs:
       - name: Install dependencies
         run: npm install -g @commitlint/cli @commitlint/config-conventional
       - run: echo "module.exports = {extends${{ ':' }} ['@commitlint/config-conventional']}" > commitlint.config.js
+      - run: echo " ${{github.event_name}}"
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
