@@ -1,0 +1,34 @@
+name: Create Release
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v[0-9]+' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          PREV_TAG: git describe --abbrev=0 --tags --exclude="$(git describe --abbrev=0 --tags)^"
+          CHANGE_LOG: git log --pretty=oneline $PREV_TAG...${{github.ref}}
+          DATE: git log -1 --format=%ai ${{github.ref}}
+          AUTHOR: git log --format='%an' ${{github.ref}}^!
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            $DATE $AUTHOR
+            Changes in this Release
+            $CHANGE_LOG
+          draft: false
+          prerelease: false
