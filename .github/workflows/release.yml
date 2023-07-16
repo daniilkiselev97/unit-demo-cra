@@ -15,10 +15,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - run: echo "git log -1 --format=%ai ${{github.ref}}" >> "$DATE"
-      - run: echo "git log --format='%an' ${{github.ref}}^!" >> "$AUTHOR"
-      - run: echo "git log --pretty=oneline $PREV_TAG...${{github.ref}}" >> "$CHANGE_LOG"
-      - run: echo "git describe --abbrev=0 --tags --exclude='$(git describe --abbrev=0 --tags)^'" >> "$PREV_TAG"
+      - run: DATE=$(git log -1 --format=%ai ${{github.ref}})
+      - run: AUTHOR=$(git log --format='%an' ${{github.ref}}^)
+      - run: CHANGE_LOG=$(git log --pretty=oneline $PREV_TAG...${{github.ref}})
+      - run: PREV_TAG=$(git describe --abbrev=0 --tags --exclude='$(git describe --abbrev=0 --tags)^')
       - name: Create Release
         uses: ncipollo/release-action@v1
         id: create_release
