@@ -15,10 +15,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - run: DATE=$(git log -1 --format=%ai ${{github.ref}})
-      - run: AUTHOR=$(git log -1 --format=%an ${{github.ref}})
-      - run: CHANGE_LOG=$(git log --pretty=oneline $PREV_TAG...${{github.ref}})
-      - run: PREV_TAG=$(git describe --abbrev=0 --tags --exclude='$(git describe --abbrev=0 --tags)^')
+      - id: date
+        run: echo "date="$(git log -1 --format=%ai ${{github.ref}}) >> "$GITHUB_OUTPUT"
+      - id: author
+        run: echo "author="$(git log -1 --format=%an ${{github.ref}}) >> "$GITHUB_OUTPUT"
+      - id: prev_tag
+        run: echo "prev_tag="$(git describe --abbrev=0 --tags --exclude='$(git describe --abbrev=0 --tags)^') >> "$GITHUB_OUTPUT"
+      - id: changelog
+        run: echo "changelog="$(git log --pretty=oneline ${{ steps.prev_tag.outputs.prev_tag }}...${{github.ref}}) >> "$GITHUB_OUTPUT"
       - name: Create Release
         uses: ncipollo/release-action@v1
         id: create_release
@@ -26,6 +30,6 @@ jobs:
           tag: ${{ github.ref }}
           name: ${{ github.ref }}
           body: |
-            "$DATE" "$AUTHOR"
+            ${{steps.date.outputs.date}} ${{steps.author.outputs.author}}
             Changes in this Release
-            echo "$CHANGE_LOG"
+            ${{steps.changelog.outputs.changelog}}
