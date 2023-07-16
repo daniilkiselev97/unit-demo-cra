@@ -26,6 +26,6 @@ jobs:
           tag: ${{ github.ref }}
           name: ${{ github.ref }}
           body: |
-            '$DATE $AUTHOR'
-            'Changes in this Release'
-            '$CHANGE_LOG'
+            $DATE $AUTHOR
+            Changes in this Release
+            $CHANGE_LOG
