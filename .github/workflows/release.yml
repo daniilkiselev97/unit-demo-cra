@@ -3,9 +3,7 @@ on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-      - 'v[0-9]+' # Push events to matching v*, i.e. v1.0, v20.15.10
-
-
+      - "v[0-9]+" # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   build:
@@ -24,15 +22,17 @@ jobs:
         run: echo "prev_tag="$(git tag --sort=-v:refname | sed -n '2p') >> "$GITHUB_OUTPUT"
       - run: echo ${{steps.prev_tag.outputs.prev_tag}}
       - run: echo $(git tag --list)
-      - id: changelog
-        run: echo "changelog="$(git log --pretty=oneline ${{steps.prev_tag.outputs.prev_tag}}...${{github.ref}}) >> "$GITHUB_OUTPUT"
+      - run: git log --pretty=oneline refs/tags/${{steps.prev_tag.outputs.prev_tag}}..${{github.ref}}
+      - id: mychangelog
+        run: git fetch --tag && echo "chlg="$(git log --pretty=oneline refs/tags/${{steps.prev_tag.outputs.prev_tag}}..${{github.ref}}) >> "$GITHUB_OUTPUT"
+      # - run: ${{steps.mychangelog.outputs.chlg}}
       - name: Create Release
         uses: ncipollo/release-action@v1
         id: create_release
         with:
-          tag: ${{ github.ref }}
-          name: ${{ github.ref }}
+          tag: ${{github.ref}}
+          name: ${{github.ref}}
           body: |
             ${{steps.date.outputs.date}} ${{steps.author.outputs.author}}
             Changes in this Release
-            ${{steps.changelog.outputs.changelog}}
+            ${{steps.mychangelog.outputs.chlg}}
