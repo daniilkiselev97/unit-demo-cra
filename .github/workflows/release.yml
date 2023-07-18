@@ -5,11 +5,30 @@ on:
     tags:
       - "v[0-9]+" # Push events to matching v*, i.e. v1.0, v20.15.10
 
+permissions:
+  contents: write
+
 jobs:
+  pr_checks:
+    uses: ./.github/workflows/demo.yml
+
+  deploy:
+    needs: pr_checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm run build
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+
   build:
     permissions: write-all
     name: Create Release
     runs-on: ubuntu-latest
+    needs: [pr_checks, deploy]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -29,13 +48,17 @@ jobs:
       - name: Create Release
         uses: JasonEtco/create-an-issue@v2
         id: create_release
-        env: 
+        env:
           TITLE: release ${{github.ref}}
           AUTHOR: ${{steps.author.outputs.author}}
           RELEASE: ${{github.ref}}
           DATE: ${{steps.date.outputs.date}}
           CHANGELOG: ${{steps.mychangelog.outputs.chlg}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ARTIFACT_LINK: ${{needs.pr_checks.outputs.artifact-link}}
+          DEPLOY_LINK: https://${{ github.repository_owner }}.github.io/unit-demo-cra/
         with:
           update_existing: true
-
+      - uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ steps.create_release.outputs.number }}

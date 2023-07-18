@@ -1,5 +1,10 @@
 name: MyChecks
-on: [pull_request]
+on:
+  pull_request:
+  workflow_call:
+    outputs:
+      artifact-link:
+        value: ${{ jobs.link.outputs.output1 }}
 
 jobs:
   commitlint:
@@ -19,7 +24,7 @@ jobs:
         with:
           node-version: 16.x
       - run: npm install
-      - run: npm run test-ci
+      - run: npm test
 
   build:
     runs-on: ubuntu-latest
@@ -31,3 +36,11 @@ jobs:
           node-version: 16.x
       - run: npm install
       - run: npm run build
+
+  link:
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.step1.outputs.link }}
+    steps:
+      - id: step1
+        run: echo "link=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
