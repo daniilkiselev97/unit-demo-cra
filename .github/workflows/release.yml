@@ -27,12 +27,11 @@ jobs:
         run: git fetch --tag && echo "chlg="$(git log --pretty=oneline refs/tags/${{steps.prev_tag.outputs.prev_tag}}..${{github.ref}}) >> "$GITHUB_OUTPUT"
       # - run: ${{steps.mychangelog.outputs.chlg}}
       - name: Create Release
-        uses: ncipollo/release-action@v1
+        uses: JasonEtco/create-an-issue@v2
         id: create_release
-        with:
-          tag: ${{github.ref}}
-          name: ${{github.ref}}
-          body: |
-            ${{steps.date.outputs.date}} ${{steps.author.outputs.author}}
-            Changes in this Release
-            ${{steps.mychangelog.outputs.chlg}}
+        env: 
+          title: release ${{github.ref}}
+          author: ${{steps.author.outputs.author}}
+          release: ${{github.ref}}
+          date: ${{steps.date.outputs.date}}
+          changelog: ${{steps.mychangelog.outputs.chlg}}
