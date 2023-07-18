@@ -1,8 +1,8 @@
 ---
-title: {{env.TITLE}}
-assignees: {{env.AUTHOR}}
+title: RELEASE version {{env.TITLE}}
 labels: RELEASE
 ---
+assignees: {{env.AUTHOR}}
 release:{{env.RELEASE}}
 date:{{env.DATE}}
 {{env.CHANGELOG}}
