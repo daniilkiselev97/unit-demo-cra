@@ -35,3 +35,7 @@ jobs:
           release: ${{github.ref}}
           date: ${{steps.date.outputs.date}}
           changelog: ${{steps.mychangelog.outputs.chlg}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          update_existing: true
+
