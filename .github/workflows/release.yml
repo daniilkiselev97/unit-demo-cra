@@ -30,11 +30,11 @@ jobs:
         uses: JasonEtco/create-an-issue@v2
         id: create_release
         env: 
-          title: release ${{github.ref}}
-          author: ${{steps.author.outputs.author}}
-          release: ${{github.ref}}
-          date: ${{steps.date.outputs.date}}
-          changelog: ${{steps.mychangelog.outputs.chlg}}
+          TITLE: release ${{github.ref}}
+          AUTHOR: ${{steps.author.outputs.author}}
+          RELEASE: ${{github.ref}}
+          DATE: ${{steps.date.outputs.date}}
+          CHANGELOG: ${{steps.mychangelog.outputs.chlg}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           update_existing: true
