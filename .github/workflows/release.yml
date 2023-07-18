@@ -24,7 +24,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
 
-  build:
+  issue_init:
     permissions: write-all
     name: Create Release
     runs-on: ubuntu-latest
